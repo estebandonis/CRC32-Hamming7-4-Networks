@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/Laboratorio2.csproj": {}
+    "/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2C#/Laboratorio2/Laboratorio2.csproj": {}
   },
   "projects": {
-    "/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/Laboratorio2.csproj": {
+    "/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2C#/Laboratorio2/Laboratorio2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/Laboratorio2.csproj",
+        "projectUniqueName": "/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2C#/Laboratorio2/Laboratorio2.csproj",
         "projectName": "Laboratorio2",
-        "projectPath": "/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/Laboratorio2.csproj",
+        "projectPath": "/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2C#/Laboratorio2/Laboratorio2.csproj",
         "packagesPath": "/Users/estebandonis/.nuget/packages/",
-        "outputPath": "/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/obj/",
+        "outputPath": "/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2C#/Laboratorio2/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/estebandonis/.nuget/NuGet/NuGet.Config"
