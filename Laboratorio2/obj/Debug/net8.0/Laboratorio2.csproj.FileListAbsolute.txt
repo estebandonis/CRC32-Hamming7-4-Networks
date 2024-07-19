@@ -1,0 +1,14 @@
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/bin/Debug/net8.0/Laboratorio2
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/bin/Debug/net8.0/Laboratorio2.deps.json
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/bin/Debug/net8.0/Laboratorio2.runtimeconfig.json
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/bin/Debug/net8.0/Laboratorio2.dll
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/bin/Debug/net8.0/Laboratorio2.pdb
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/obj/Debug/net8.0/Laboratorio2.GeneratedMSBuildEditorConfig.editorconfig
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/obj/Debug/net8.0/Laboratorio2.AssemblyInfoInputs.cache
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/obj/Debug/net8.0/Laboratorio2.AssemblyInfo.cs
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/obj/Debug/net8.0/Laboratorio2.csproj.CoreCompileInputs.cache
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/obj/Debug/net8.0/Laboratorio2.dll
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/obj/Debug/net8.0/refint/Laboratorio2.dll
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/obj/Debug/net8.0/Laboratorio2.pdb
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/obj/Debug/net8.0/Laboratorio2.genruntimeconfig.cache
+/Users/estebandonis/Documents/OctavoSemestre/Redes/Laboratorios/Laboratorio 2/Laboratorio2/obj/Debug/net8.0/ref/Laboratorio2.dll
