@@ -28,7 +28,13 @@ def addChecksum(message, polinomioBits, grado):
             start = True
         else:
             startIndex = oldMessage.index('1')
-            oldMessage = oldMessage[startIndex:]
+            print("StartIndex: ",startIndex)
+            tempOldmessage = oldMessage[startIndex:]
+            if len(tempOldmessage) < len(polinomioBits):
+                tempOldmessage.extend(oldMessage[-len(polinomioBits):])
+                oldMessage = tempOldmessage.copy()
+            else:
+                oldMessage = tempOldmessage.copy()
 
         if len(oldMessage) == len(polinomioBits):
             endFlag = True
@@ -39,14 +45,17 @@ def addChecksum(message, polinomioBits, grado):
 
 
 def main():
-    polinomio = '1001'
+    # polinomioBits = '100000100110000010001110110110111'
+
+    polinomioBits = '1001'
+
     gradoPolinomio = 3
 
     mensaje = input("Ingrese el mensaje: ")
 
     mensajeExtendido = mensaje + '0' * gradoPolinomio
 
-    messageWithChecksum = mensaje + addChecksum(mensajeExtendido, polinomio, gradoPolinomio)
+    messageWithChecksum = mensaje + addChecksum(mensajeExtendido, polinomioBits, gradoPolinomio)
 
     print(messageWithChecksum)
 
