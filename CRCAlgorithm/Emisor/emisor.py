@@ -4,7 +4,9 @@ def XOR(a, b):
     else:
         return '1'
     
-def verifyXOROperation(polinomioBits, oldMessage, newMessage):
+def verifyXOROperation(polinomioBits, oldMessage):
+    newMessage = []
+
     for id, bit in enumerate(oldMessage):
         if id < len(polinomioBits):
             newBit = XOR(bit, polinomioBits[id])
@@ -12,14 +14,15 @@ def verifyXOROperation(polinomioBits, oldMessage, newMessage):
         else:
             newMessage.extend(oldMessage[id:])
             oldMessage = newMessage.copy()
-            newMessage = []
             break
     
-    return oldMessage, newMessage
+    if (oldMessage != newMessage):
+        oldMessage = newMessage.copy()
+    
+    return oldMessage
 
 def addChecksum(message, polinomioBits, grado):
     oldMessage = list(message)
-    newMessage = []
     endFlag = False
     start = False
 
@@ -28,30 +31,33 @@ def addChecksum(message, polinomioBits, grado):
             start = True
         else:
             startIndex = oldMessage.index('1')
-            print("StartIndex: ",startIndex)
             tempOldmessage = oldMessage[startIndex:]
             if len(tempOldmessage) < len(polinomioBits):
-                tempOldmessage.extend(oldMessage[-len(polinomioBits):])
-                oldMessage = tempOldmessage.copy()
-            else:
-                oldMessage = tempOldmessage.copy()
+                tempOldmessage = oldMessage[-len(polinomioBits):]
+                
+            oldMessage = tempOldmessage.copy()
 
         if len(oldMessage) == len(polinomioBits):
             endFlag = True
 
-        oldMessage, newMessage = verifyXOROperation(polinomioBits, oldMessage, newMessage)
+        oldMessage = verifyXOROperation(polinomioBits, oldMessage)
 
-    return ''.join(newMessage[-grado:])
+    return ''.join(oldMessage[-grado:])
 
 
 def main():
-    # polinomioBits = '100000100110000010001110110110111'
+    polinomioBits = '100000100110000010001110110110111'
 
-    polinomioBits = '1001'
+    # polinomioBits = '1001'
 
-    gradoPolinomio = 3
+    gradoPolinomio = 32
 
     mensaje = input("Ingrese el mensaje: ")
+
+    for bit in mensaje:
+        if bit != '1' and bit != '0':
+            print('El mensaje debe ser binario (1s y 0s solamente)')
+            return
 
     mensajeExtendido = mensaje + '0' * gradoPolinomio
 
