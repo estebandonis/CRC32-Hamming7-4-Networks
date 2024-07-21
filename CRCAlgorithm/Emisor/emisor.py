@@ -63,7 +63,7 @@ def main():
 
     messageWithChecksum = mensaje + addChecksum(mensajeExtendido, polinomioBits, gradoPolinomio)
 
-    print(messageWithChecksum)
+    print("Mensaje Extendido: ", messageWithChecksum)
 
 
 if __name__ == "__main__":

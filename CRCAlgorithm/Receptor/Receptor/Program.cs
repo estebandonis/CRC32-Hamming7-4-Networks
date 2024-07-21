@@ -27,7 +27,7 @@ class Program
             }
             else
             {
-                NewMessage += OldMessage.Substring(i);
+                NewMessage += OldMessage[i..];
                 OldMessage = NewMessage;
                 break;
             }
@@ -55,11 +55,11 @@ class Program
             else
             {
                 int startIndex = OldMessage.IndexOf('1');
-                string tempOldMessage = OldMessage.Substring(startIndex);;
+                string tempOldMessage = OldMessage[startIndex..];;
                 
                 if (tempOldMessage.Length < polinomioBits.Length)
                 {
-                    tempOldMessage = OldMessage.Substring(OldMessage.Length - polinomioBits.Length);
+                    tempOldMessage = OldMessage[^polinomioBits.Length..];
                 }
 
                 OldMessage = tempOldMessage;
@@ -73,7 +73,7 @@ class Program
             OldMessage = VerifyXOROperation(polinomioBits, OldMessage);
         }
 
-        return OldMessage.Substring(OldMessage.Length - gradoPolinomio);
+        return OldMessage[^gradoPolinomio..];
     }
 
     static void Main()
@@ -90,15 +90,13 @@ class Program
 
         string verification = VerifyMessage(polinomioBits, message, gradoPolinomio);
 
-        Console.WriteLine("Verification: " + verification);
-
         if (verification.Contains('1'))
         {
-            Console.WriteLine($"El mensaje recibido: {message} contiene errores.");
+            Console.WriteLine("Error: Se descarta el mensaje por contener errores.");
         }
         else
         {
-            Console.WriteLine($"El mensaje recibido: {message} no contiene errores.");
+            Console.WriteLine($"El mensaje recibido: {message[..^gradoPolinomio]} no contiene errores.");
         }
     }
 }
