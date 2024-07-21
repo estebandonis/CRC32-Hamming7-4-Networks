@@ -10,7 +10,7 @@ def hamming_7_4_encoder(data_bits):
     
     # Verificar que los bits sean 0 o 1
     if any(bit not in (0, 1) for bit in data_bits):
-        raise ValueError("Bits must be 0 or 1.")
+        raise ValueError("Solo pueden ser bits 0 o 1.")
     
     # Asignar bits de datos a sus posiciones
     d1, d2, d3, d4 = data_bits
@@ -25,9 +25,18 @@ def hamming_7_4_encoder(data_bits):
     
     return hamming_code
 
-# Ejemplo de uso mensaje del emisor
-data_bits = [0, 1, 1, 0]  # Solo se puede poner 4 bits de datos (0 o 1)
+# Solicitar al usuario que ingrese los bits de datos
+print("************************************************")
+print("Bienvenido al algoritmo de Hamming (Emisor)")
+print("************************************************")
+data_bits_input = input("Ingrese 4 bits de datos (separados por espacios, e.g., '1 0 1 0'): ")
+data_bits = list(map(int, data_bits_input.split()))
+
+if len(data_bits) != 4 or any(bit not in (0, 1) for bit in data_bits):
+    raise ValueError("Debe ingresar exactamente 4 bits de datos, cada uno siendo 0 o 1.")
+
 encoded_bits = hamming_7_4_encoder(data_bits)
+
 print("************************************************")
 print("************ ALGORITMO DE HAMMING **************")
 print("************************************************")
