@@ -40,22 +40,34 @@ def process_input_bits(input_bits):
     
     input_bits = list(map(int, input_bits))
     blocks = [input_bits[i:i + 7] for i in range(0, len_bits, 7)]
-    
+
     corrected_bits = []
+    original_message = []
+    no_errors = True
+
     for i, block in enumerate(blocks):
         data_bits, parities, error_position = hamming_7_4_decoder(block)
         block_status = "no hubo error" if error_position == 0 else f"error corregido en la posición {error_position}"
+        
+        if error_position != 0:
+            no_errors = False
+        
         corrected_block = block[:]
         corrected_bits.extend(corrected_block)
         
+        original_message.extend(data_bits)
+        
         print(f"Bloque {i + 1} ({block_status}): {corrected_block}")
-    
-    print(f"Mensaje corregido: {corrected_bits}")
+
+    if no_errors:
+        print(f"El mensaje es: {''.join(map(str, original_message))}")
+    else:
+        print(f"Mensaje corregido: {corrected_bits}")
 
 # Solicitar al usuario que ingrese los bits de datos
 print("****************")
 print("Bienvenido al algoritmo de Hamming (Receptor)")
 print("****************")
-input_bits = input("Ingrese 7 o 14 bits de datos: ")
+input_bits = input("Ingresa los bits de datos recibidos del emisor: ")
 
 process_input_bits(input_bits)
