@@ -1,5 +1,4 @@
-﻿using System;
-class Program
+﻿class Program
 {
 
     static char XOR(char a, char b)
@@ -55,6 +54,10 @@ class Program
             else
             {
                 int startIndex = OldMessage.IndexOf('1');
+                if (startIndex == -1)
+                {
+                    break;
+                }
                 string tempOldMessage = OldMessage[startIndex..];;
                 
                 if (tempOldMessage.Length < polinomioBits.Length)
@@ -79,8 +82,6 @@ class Program
     static void Main()
     {
         string polinomioBits = "100000100110000010001110110110111";
-
-        // string polinomioBits = "1001";
 
         int gradoPolinomio = 32;
 

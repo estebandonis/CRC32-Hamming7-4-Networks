@@ -48,8 +48,6 @@ def addChecksum(message, polinomioBits, grado):
 def main():
     polinomioBits = '100000100110000010001110110110111'
 
-    # polinomioBits = '1001'
-
     gradoPolinomio = 32
 
     mensaje = input("Ingrese el mensaje: ")
