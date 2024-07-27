@@ -3,10 +3,10 @@ import socket
 
 
 class Transmision:
-    def __init__(self, message, serverIp, serverPort):
+    def __init__(self, message):
         self.message = message
-        self.serverIp = serverIp
-        self.serverPort = serverPort
+        self.serverIp = "127.0.0.1"
+        self.serverPort = 65432 
 
         self.sendMessage()
         print("Mensaje enviado: ", self.message)
@@ -32,16 +32,15 @@ class Transmision:
 
 
 class Noise:
-    
     def __init__(self, message):
         self.message = message
 
-        if self.getNoiseChance():
-            self.message = self.addNoise(self.message)
+        # if self.getNoiseChance():
+        #     self.message = self.addNoise()
         
         Transmision(self.message)
 
-    def addNoise(self, message):
+    def addNoise(self):
         messageList = list(self.message)
         randomIndex = random.randint(0, len(messageList) - 1)
         messageList[randomIndex] = '1' if messageList[randomIndex] == '0' else '0'
@@ -54,25 +53,22 @@ class Noise:
 
 
 class Link:
-
     def __init__(self, message):
         self.message = message
+        self.main()
+    
+    def main(self):
+        self.message = self.message
 
         self.polinomBits = '100000100110000010001110110110111'
 
-        polinomGrade = 32
+        self.polinomGrade = 32
 
-        for bit in message:
-            if bit != '1' and bit != '0':
-                print('El mensaje debe ser binario (1s y 0s solamente)')
-                return
+        self.extendedMessage = self.message + '0' * self.polinomGrade
 
-        self.extendedMessage = message + '0' * polinomGrade
+        self.addChecksum()
 
-        messageWithChecksum = message + self.addChecksum()
-
-        print("Mensaje con checksum: ", messageWithChecksum)
-    
+        Noise(self.message)
 
     @staticmethod
     def XOR(a, b):
@@ -80,7 +76,6 @@ class Link:
             return '0'
         else:
             return '1'
-
 
     def verifyXOROperation(self):
         newMessage = []
@@ -97,9 +92,8 @@ class Link:
         if (self.oldMessage != newMessage):
             self.oldMessage = newMessage.copy()
 
-
     def addChecksum(self):
-        oldMessage = list(self.extendedMessage)
+        self.oldMessage = list(self.extendedMessage)
         endFlag = False
         start = False
 
@@ -107,29 +101,40 @@ class Link:
             if start == False:
                 start = True
             else: # Agregar los 0s extras y separar el mensaje en bloques de 32 bits
-                startIndex = oldMessage.index('1')
-                tempOldmessage = oldMessage[startIndex:]
+                startIndex = self.oldMessage.index('1')
+                tempOldmessage = self.oldMessage[startIndex:]
                 if len(tempOldmessage) < len(self.polinomBits):
-                    tempOldmessage = oldMessage[-len(self.polinomBits):]
+                    tempOldmessage = self.oldMessage[-len(self.polinomBits):]
                     
-                oldMessage = tempOldmessage.copy()
+                self.oldMessage = tempOldmessage.copy()
 
-            if len(oldMessage) == len(self.polinomBits):
+            if len(self.oldMessage) == len(self.polinomBits):
                 endFlag = True
 
             self.verifyXOROperation()
 
-        return ''.join(oldMessage[-self.grado:])
+        self.message = self.message + ''.join(self.oldMessage[-self.polinomGrade:])
 
 
 class Presentation:
+    def __init__(self, message):
+        self.message = message
+        self.encodeMessage()
+        Link(self.message)
 
-    def __init__(self):
-        pass
+    def encodeMessage(self):
+        byte_array = self.message.encode('utf-8')
+        print("Mensaje en bytes: ", byte_array)
+
+        self.message = ''.join(format(byte, '08b') for byte in byte_array)
+        print("Mensaje en bits: ", self.message)
 
 
 class Application:
     def __init__(self):
+        self.main()
+
+    def main(self):
         while True:
             print("Si quiere salir, escriba 'exit'")
             message = input("Ingrese el mensaje: ")
@@ -137,10 +142,8 @@ class Application:
                 break
             else:
                 print("Mensaje: ", message)
-                Presentation().receiveMessage(message)
+                Presentation(message)
+
 
 if __name__ == "__main__":
-    HOST = "127.0.0.1"
-    PORT = 65432 
-    # Application()
-    Transmision("Hola, mundo!", HOST, PORT)
+    Application()
