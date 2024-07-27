@@ -1,84 +1,171 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+#include <winsock2.h>
+#include <time.h>
 
-// Función para convertir una cadena de bits a un array de enteros
-void bitsToArray(const char* bits, int* array, int len) {
+#pragma comment(lib, "ws2_32.lib")
+
+void solicitarMensaje(char* mensaje) {
+    printf("Ingrese el mensaje: ");
+    scanf("%s", mensaje);
+}
+
+void codificarMensaje(const char* mensaje, char* mensajeBinario) {
+    int len = strlen(mensaje);
+    mensajeBinario[0] = '\0';
     for (int i = 0; i < len; i++) {
-        array[i] = bits[i] - '0';
+        char bin[9] = {0};
+        unsigned char temp = mensaje[i];
+        for (int j = 7; j >= 0; j--) {
+            bin[j] = (temp & 1) + '0';
+            temp >>= 1;
+        }
+        strcat(mensajeBinario, bin);
     }
 }
 
-// Función para convertir un array de enteros a una cadena de bits
-void arrayToBits(int* array, char* bits, int len) {
-    for (int i = 0; i < len; i++) {
-        bits[i] = array[i] + '0';
+void hammingEncoder(int* data_bits, int* hamming_code, int m, int n) {
+    int parity_bits = n - m;
+    int j = 0, k = 0;
+
+    for (int i = 1; i <= n; i++) {
+        if ((i & (i - 1)) == 0) {
+            hamming_code[i-1] = 0; // Inicializamos los bits de paridad a 0
+        } else {
+            hamming_code[i-1] = data_bits[j++];
+        }
     }
-    bits[len] = '\0';
+
+    for (int i = 0; i < parity_bits; i++) {
+        int parity_pos = (1 << i);
+        int parity = 0;
+
+        for (int j = 1; j <= n; j++) {
+            if (j & parity_pos) {
+                parity ^= hamming_code[j-1];
+            }
+        }
+        hamming_code[parity_pos-1] = parity;
+    }
 }
 
-// Función para calcular los bits de paridad y formar el código Hamming de 7 bits
-void hamming74Encoder(int* data_bits, int* hamming_code) {
-    int d1 = data_bits[0];
-    int d2 = data_bits[1];
-    int d3 = data_bits[2];
-    int d4 = data_bits[3];
+void calcularIntegridad(const char* mensajeBinario, char* mensajeConHamming) {
+    int len = strlen(mensajeBinario);
+    int m = 4; // bits de datos
+    int n = 7; // bits de código Hamming
 
-    // Calcular bits de paridad
-    int p1 = d1 ^ d2 ^ d3;
-    int p2 = d1 ^ d2 ^ d4;
-    int p3 = d1 ^ d3 ^ d4;
-
-    // Construir el código Hamming de 7 bits
-    hamming_code[0] = d1;
-    hamming_code[1] = d2;
-    hamming_code[2] = d3;
-    hamming_code[3] = p1;
-    hamming_code[4] = d4;
-    hamming_code[5] = p2;
-    hamming_code[6] = p3;
-}
-
-void processBits(char* input_bits) {
-    int len = strlen(input_bits);
     int data[len];
-    bitsToArray(input_bits, data, len);
+    for (int i = 0; i < len; i++) {
+        data[i] = mensajeBinario[i] - '0';
+    }
 
-    int num_blocks = (len + 3) / 4;
-    char output_bits[20 * num_blocks];
-    output_bits[0] = '\0';
+    int num_blocks = (len + m - 1) / m;
+    mensajeConHamming[0] = '\0';
 
     for (int i = 0; i < num_blocks; i++) {
-        int start = len - 4 * (i + 1);
-        int end = len - 4 * i;
-        int segment[4] = {0, 0, 0, 0};
+        int start = len - m * (i + 1);
+        int end = len - m * i;
+        int segment[m];
+        memset(segment, 0, m * sizeof(int));
 
         for (int j = 0; j < (end - start); j++) {
             if (start + j >= 0) {
-                segment[4 - (end - start) + j] = data[start + j];
+                segment[m - (end - start) + j] = data[start + j];
             }
         }
 
-        int hamming[7];
-        hamming74Encoder(segment, hamming);
+        int hamming[n];
+        hammingEncoder(segment, hamming, m, n);
         
-        // Imprimir los bits de paridad calculados
-        printf("Bits de paridad: %d %d %d\n", hamming[3], hamming[5], hamming[6]);
-
-        char block_output[8];
-        arrayToBits(hamming, block_output, 7);
-        strcat(output_bits, block_output);
+        char block_output[n + 1];
+        for (int k = 0; k < n; k++) {
+            block_output[k] = hamming[k] + '0';
+        }
+        block_output[n] = '\0';
+        strcat(mensajeConHamming, block_output);
     }
+}
 
-    printf("Codigo Hamming: %s\n", output_bits);
+void aplicarRuido(char* mensaje, float probabilidadError) {
+    int len = strlen(mensaje);
+    srand(time(NULL));
+    for (int i = 0; i < len; i++) {
+        if ((float)rand() / RAND_MAX < probabilidadError) {
+            mensaje[i] = (mensaje[i] == '0') ? '1' : '0';
+        }
+    }
+}
+
+void enviarInformacion(const char* mensaje, const char* direccionIP, int puerto) {
+    WSADATA wsa;
+    SOCKET s;
+    struct sockaddr_in server;
+
+    printf("\nInicializando Winsock...");
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+        printf("Error. Codigo: %d", WSAGetLastError());
+        return;
+    }
+    printf("Inicializado.\n");
+
+    if ((s = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET) {
+        printf("No se pudo crear el socket. Codigo: %d", WSAGetLastError());
+        WSACleanup();
+        return;
+    }
+    printf("Socket creado.\n");
+
+    server.sin_addr.s_addr = inet_addr(direccionIP);
+    server.sin_family = AF_INET;
+    server.sin_port = htons(puerto);
+
+    if (connect(s, (struct sockaddr*)&server, sizeof(server)) < 0) {
+        printf("Conexión fallida\n");
+        closesocket(s);
+        WSACleanup();
+        return;
+    }
+    printf("Conectado al servidor.\n");
+
+    if (send(s, mensaje, strlen(mensaje), 0) < 0) {
+        printf("No se pudo enviar el mensaje\n");
+        closesocket(s);
+        WSACleanup();
+        return;
+    }
+    printf("Mensaje enviado.\n");
+
+    closesocket(s);
+    WSACleanup();
 }
 
 int main() {
-    char input_bits[100];
-    printf("Ingrese los bits de datos: ");
-    scanf("%s", input_bits);
+    char mensaje[100];
+    char mensajeBinario[800] = {0};
+    char mensajeConHamming[1400] = {0};
+    float probabilidadError;
+    char direccionIP[20];
+    int puerto;
 
-    processBits(input_bits);
+    solicitarMensaje(mensaje);
+    codificarMensaje(mensaje, mensajeBinario);
+    calcularIntegridad(mensajeBinario, mensajeConHamming);
+
+    printf("Mensaje codificado (en bits): %s\n", mensajeBinario);
+    //printf("Mensaje con código Hamming: %s\n", mensajeConHamming);
+
+    printf("Ingrese la probabilidad de error (ej. 0.01 para 1%%): ");
+    scanf("%f", &probabilidadError);
+    aplicarRuido(mensajeConHamming, probabilidadError);
+
+    printf("Ingrese la dirección IP del receptor: ");
+    scanf("%s", direccionIP);
+    printf("Ingrese el puerto del receptor: ");
+    scanf("%d", &puerto);
+
+    enviarInformacion(mensajeConHamming, direccionIP, puerto);
 
     return 0;
 }
