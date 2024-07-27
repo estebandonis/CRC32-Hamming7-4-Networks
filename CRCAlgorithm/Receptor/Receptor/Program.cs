@@ -81,6 +81,9 @@ namespace Receptor
                         break;
                     }
                     string tempOldMessage = OldMessage[startIndex..];;
+                    Console.WriteLine(tempOldMessage);
+                    Console.WriteLine(tempOldMessage.Length);
+                    Console.WriteLine(polinomioBits.Length);
                     
                     if (tempOldMessage.Length < polinomioBits.Length)
                     {
@@ -109,9 +112,7 @@ namespace Receptor
 
             Console.Write("Ingrese el mensaje: ");
 
-            string message = Console.ReadLine() ?? "11010001";
-
-            string verification = VerifyMessage(polinomioBits, message, gradoPolinomio);
+            string verification = VerifyMessage(polinomioBits, _message, gradoPolinomio);
 
             if (verification.Contains('1'))
             {
@@ -191,7 +192,7 @@ namespace Receptor
         {
             // Transmision transmision = new();
             // transmision.Execute();
-            Link link = new("11010001");
+            Link link = new("1010101011011110101001011000000011011");
             link.Execute();
         }
     }
