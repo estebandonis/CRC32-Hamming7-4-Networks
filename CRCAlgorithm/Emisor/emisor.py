@@ -115,6 +115,9 @@ class Link:
 
         self.message = self.message + ''.join(self.oldMessage[-self.polinomGrade:])
 
+        if len(self.message) % 32 != 0:
+            self.message = '0' * (32 - len(self.message) % 32) + self.message
+
 
 class Presentation:
     def __init__(self, message):

@@ -136,7 +136,7 @@ namespace Receptor
             else
             {
                 _message = _message[..^gradoPolinomio];
-                Console.WriteLine($"Message received: '{_message}' has no errors.");
+                Console.WriteLine($"Message received has no errors.");
 
                 Presentation.DecodeMessage(_message);
             }
