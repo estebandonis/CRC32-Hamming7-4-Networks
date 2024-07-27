@@ -154,7 +154,6 @@ int main() {
     calcularIntegridad(mensajeBinario, mensajeConHamming);
 
     printf("Mensaje codificado (en bits): %s\n", mensajeBinario);
-    //printf("Mensaje con código Hamming: %s\n", mensajeConHamming);
 
     printf("Ingrese la probabilidad de error (ej. 0.01 para 1%%): ");
     scanf("%f", &probabilidadError);
@@ -165,7 +164,7 @@ int main() {
     printf("Ingrese el puerto del receptor: ");
     scanf("%d", &puerto);
 
-    enviarInformacion(mensajeConHamming, direccionIP, puerto);
+    enviarInformacion(mensajeBinario, direccionIP, puerto);
 
     return 0;
 }
