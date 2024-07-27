@@ -8,19 +8,40 @@ namespace Receptor
 
     class Aplication
     {
-        
+        public static void PrintDecodedMessage(string message)
+        {
+            Console.WriteLine($"Message decoded: {message}");
+        }
     }
 
 
-    class Presentation
+    class Presentation()
     {
-        
+
+        public static void DecodeMessage(string message)
+        {
+            string decodedMessage = "";
+            for (int i = 0; i < message.Length; i += 8)
+            {
+                string byteString = message[i..(i + 8)];
+                byte byteValue = Convert.ToByte(byteString, 2);
+                decodedMessage += (char)byteValue;
+            }
+
+            Aplication.PrintDecodedMessage(decodedMessage);
+        }
     }
 
 
-    class Link(string message)
+    class Link
     {
-        private string _message = message;
+        private string _message = "";
+
+        public string Message
+        {
+            get => _message;
+            set => _message = value;
+        }
 
         static char XOR(char a, char b)
         {
@@ -74,16 +95,12 @@ namespace Receptor
                 } 
                 else
                 {
-                    Console.WriteLine(OldMessage);
                     int startIndex = OldMessage.IndexOf('1');
                     if (startIndex <= -1)
                     {
                         break;
                     }
                     string tempOldMessage = OldMessage[startIndex..];;
-                    Console.WriteLine(tempOldMessage);
-                    Console.WriteLine(tempOldMessage.Length);
-                    Console.WriteLine(polinomioBits.Length);
                     
                     if (tempOldMessage.Length < polinomioBits.Length)
                     {
@@ -110,17 +127,18 @@ namespace Receptor
 
             int gradoPolinomio = 32;
 
-            Console.Write("Ingrese el mensaje: ");
-
             string verification = VerifyMessage(polinomioBits, _message, gradoPolinomio);
 
             if (verification.Contains('1'))
             {
-                Console.WriteLine("Error: Se descarta el mensaje por contener errores.");
+                Console.WriteLine("Error: Found errors during verification.");
             }
             else
             {
-                Console.WriteLine($"El mensaje recibido: {_message[..^gradoPolinomio]} no contiene errores.");
+                _message = _message[..^gradoPolinomio];
+                Console.WriteLine($"Message received: '{_message}' has no errors.");
+
+                Presentation.DecodeMessage(_message);
             }
         }
     }
@@ -137,6 +155,7 @@ namespace Receptor
         {
             // Create a TCP listener
             TcpListener listener = new(IPAddress.Parse(HOST), PORT);
+            Link link = new();
 
             // Bind the listener to the specified host and port
             listener.Start();
@@ -149,6 +168,9 @@ namespace Receptor
 
                 // Handle the connection in a separate method
                 HandleClient(client);
+
+                link.Message = _message?? "";
+                link.Execute();
             }
         }
 
@@ -165,7 +187,7 @@ namespace Receptor
                     // Convert the received bytes to a string
                     _message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     Console.WriteLine($"Message received: \n{_message}");
-                    
+
 
                     // Send a response back to the client
                     string response = "Message received correctly";
@@ -190,10 +212,8 @@ namespace Receptor
     {
         static void Main(string[] args)
         {
-            // Transmision transmision = new();
-            // transmision.Execute();
-            Link link = new("1010101011011110101001011000000011011");
-            link.Execute();
+            Transmision transmision = new();
+            transmision.Execute();
         }
     }
 }
