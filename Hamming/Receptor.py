@@ -80,7 +80,7 @@ def receive_message():
                 data += part
 
             input_bits = data.decode()
-            print(f"Bits recibidos: {input_bits}")
+            print(f"Mensaje recibidos: {input_bits}")
             process_input_bits(input_bits)
 
 print("****************")
