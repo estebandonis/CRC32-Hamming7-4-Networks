@@ -1,32 +1,38 @@
 import socket
 
-# Función para calcular los bits de paridad de Hamming(8,4)
+# Función para calcular los bits de paridad de Hamming(12,8)
 def calculate_parity_bits(data_bits):
-    p1 = data_bits[0] ^ data_bits[1] ^ data_bits[3]
-    p2 = data_bits[0] ^ data_bits[2] ^ data_bits[3]
-    p3 = data_bits[1] ^ data_bits[2] ^ data_bits[3]
-    p4 = data_bits[0] ^ data_bits[1] ^ data_bits[2] ^ data_bits[3]
+    d1, d2, d3, d4, d5, d6, d7, d8 = data_bits
+    p1 = d1 ^ d2 ^ d4 ^ d5 ^ d7
+    p2 = d1 ^ d3 ^ d4 ^ d6 ^ d7
+    p3 = d2 ^ d3 ^ d4 ^ d8
+    p4 = d5 ^ d6 ^ d7 ^ d8
     return [p1, p2, p3, p4]
 
-# Función para decodificar y corregir datos usando Hamming(8,4)
+# Función para decodificar y corregir datos usando Hamming(12,8)
 def hamming_decode(received_bits):
-    if len(received_bits) != 8:
-        raise ValueError("El bloque debe tener exactamente 8 bits.")
+    if len(received_bits) != 12:
+        raise ValueError("El bloque debe tener exactamente 12 bits.")
 
-    p1, p2, d1, p3, d2, d3, d4, p4 = received_bits
-    c1 = p1 ^ d1 ^ d2 ^ d4
-    c2 = p2 ^ d1 ^ d3 ^ d4
-    c3 = p3 ^ d2 ^ d3 ^ d4
-    c4 = p4 ^ d1 ^ d2 ^ d3 ^ d4
+    d8, d7, d6, d5, p4, d4, d3, d2, p3, d1, p2, p1 = received_bits
+
+    # Calcular los bits de control
+    c1 = p1 ^ d1 ^ d2 ^ d4 ^ d5 ^ d7
+    c2 = p2 ^ d1 ^ d3 ^ d4 ^ d6 ^ d7
+    c3 = p3 ^ d2 ^ d3 ^ d4 ^ d8
+    c4 = p4 ^ d5 ^ d6 ^ d7 ^ d8
+
     error_pos = c1 + (c2 << 1) + (c3 << 2) + (c4 << 3)
     
     if error_pos > 0:
-        if error_pos <= 8:
+        if error_pos <= 12:
             received_bits[error_pos - 1] ^= 1
         else:
             print(f"Error: Posición de error ({error_pos}) fuera de rango.")
     
-    return received_bits
+    # Extraer los bits de datos
+    data_bits = [d8, d7, d6, d5, d4, d3, d2, d1]
+    return data_bits
 
 # Función para recibir datos a través de sockets
 def receive_data(ip, port):
@@ -55,22 +61,22 @@ def main():
     parity_bits = []
 
     # Capa de Enlace
-    for i in range(0, len(bits), 8):
-        block = bits[i:i + 8]
-        if len(block) == 8:
+    for i in range(0, len(bits), 12):
+        block = bits[i:i + 12]
+        if len(block) == 12:
             blocks.append(block)
             corrected_block = hamming_decode(block)
             corrected_bits.extend(corrected_block)
             parity_bits.append(block[:4])  # Los primeros 4 bits son los de paridad
     
     # Imprimir bloques y bits de paridad
-    print("\nBloques de 8 bits recibidos:")
+    print("\nBloques de 12 bits recibidos:")
     for i, block in enumerate(blocks):
         print(f"Bloque {i + 1}: {''.join(map(str, block))}")
 
     print("\nBits de paridad:")
     for i, pbits in enumerate(parity_bits):
-        print(f"Bloque {i + 1} - Bits de paridad: {''.join(map(str, pbits))}")
+        print(f"Bloque {i + 1} - Bits de paridad: {''.join(map(str, pbits))[:4]}")
     
     # Capa de Presentación
     if len(corrected_bits) % 8 != 0:
@@ -78,14 +84,14 @@ def main():
     else:
         print("Mensaje recibido y corregido.")
     
-    # Convertir bits a caracteres ASCII
+    # Extraer bits de datos sin los bits de paridad y convertir a caracteres ASCII
     ascii_chars = []
     for i in range(0, len(corrected_bits), 8):
-        byte = corrected_bits[i:i + 8]
+        byte = corrected_bits[i:i + 8]  # Extraer d8, d7, d6, d5, d4, d3, d2, d1
         if len(byte) == 8:
             char = chr(int(''.join(map(str, byte)), 2))
             ascii_chars.append(char)
-    
+
     # Capa de Aplicación
     decoded_message = ''.join(ascii_chars)
     print(f"\nMensaje en bits concatenados: {''.join(map(str, corrected_bits))}")
