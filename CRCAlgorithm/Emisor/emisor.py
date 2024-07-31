@@ -4,7 +4,7 @@ import socket
 
 class Transmision:
     def __init__(self, message):
-        self.message = message
+        self.message = ' '.join(message)
         self.serverIp = "127.0.0.1"
         self.serverPort = 65432 
 
@@ -64,11 +64,17 @@ class Link:
 
         self.polinomGrade = 32
 
-        self.extendedMessage = self.message + '0' * self.polinomGrade
+        newMessage = []
 
-        self.addChecksum()
+        for block in self.message:
+            self.extendedMessage = block + '0' * self.polinomGrade
 
-        Noise(self.message)
+            checksum = self.addChecksum()
+
+            newMessage.append(block)
+            newMessage.append(checksum)
+
+        Noise(newMessage)
 
     @staticmethod
     def XOR(a, b):
@@ -113,10 +119,7 @@ class Link:
 
             self.verifyXOROperation()
 
-        self.message = self.message + ''.join(self.oldMessage[-self.polinomGrade:])
-
-        if len(self.message) % 32 != 0:
-            self.message = '0' * (32 - len(self.message) % 32) + self.message
+        return ''.join(self.oldMessage[-self.polinomGrade:])
 
 
 class Presentation:
@@ -127,10 +130,22 @@ class Presentation:
 
     def encodeMessage(self):
         byte_array = self.message.encode('utf-8')
-        print("Mensaje en bytes: ", byte_array)
 
         self.message = ''.join(format(byte, '08b') for byte in byte_array)
-        print("Mensaje en bits: ", self.message)
+
+        self.checkMessageSize()
+
+    def checkMessageSize(self):
+        if len(self.message) % 32 != 0:
+            self.message = '0' * (32 - len(self.message) % 32) + self.message
+        
+        if len(self.message) > 32:
+            self.message = self.split_into_blocks()
+        else: 
+            self.message = [self.message]
+
+    def split_into_blocks(self, block_size=32):
+        return [self.message[i:i + block_size] for i in range(0, len(self.message), block_size)]  
 
 
 class Application:
@@ -143,6 +158,8 @@ class Application:
             message = input("Ingrese el mensaje: ")
             if message == 'exit':
                 break
+            elif message == '':
+                print("No se ingresó ningún mensaje")
             else:
                 print("Mensaje: ", message)
                 Presentation(message)

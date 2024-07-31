@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
@@ -35,9 +34,9 @@ namespace Receptor
 
     class Link
     {
-        private string _message = "";
+        private string[] _message = [];
 
-        public string Message
+        public string[] Message
         {
             get => _message;
             set => _message = value;
@@ -127,18 +126,30 @@ namespace Receptor
 
             int gradoPolinomio = 32;
 
-            string verification = VerifyMessage(polinomioBits, _message, gradoPolinomio);
+            string verifyMessage = "";
 
-            if (verification.Contains('1'))
+            bool errorFlag = false;
+
+            foreach (string word in _message)
             {
-                Console.WriteLine("Error: Found errors during verification.");
+                string verification = VerifyMessage(polinomioBits, word, gradoPolinomio);
+
+                if (verification.Contains('1'))
+                {
+                    Console.WriteLine("Error: Found errors during verification.");
+                    errorFlag = true;
+                    break;
+                }
+                else
+                {
+                    verifyMessage += word[..^gradoPolinomio];
+                }   
             }
-            else
-            {
-                _message = _message[..^gradoPolinomio];
-                Console.WriteLine($"Message received has no errors.");
 
-                Presentation.DecodeMessage(_message);
+            if (errorFlag == false)
+            {
+                Console.WriteLine("Message received has no errors.");
+                Presentation.DecodeMessage(verifyMessage);
             }
         }
     }
@@ -149,7 +160,7 @@ namespace Receptor
         const string HOST = "127.0.0.1";
         const int PORT = 65432;
 
-        private string? _message;
+        private string[]? _message;
 
         public void Execute()
         {
@@ -163,13 +174,11 @@ namespace Receptor
 
             while (true)
             {
-                // Accept incoming connections
                 TcpClient client = listener.AcceptTcpClient();
 
-                // Handle the connection in a separate method
                 HandleClient(client);
 
-                link.Message = _message?? "";
+                link.Message = _message?? [];
                 link.Execute();
             }
         }
@@ -185,11 +194,25 @@ namespace Receptor
                 while ((bytesRead = stream.Read(buffer, 0, buffer.Length)) != 0)
                 {
                     // Convert the received bytes to a string
-                    _message = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    Console.WriteLine($"Message received: \n{_message}");
+                    string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    Console.WriteLine($"Message received");
+                    _message = receivedMessage.Split(' ');
 
+                    List<string> joinedMessage = [];
+                    for (int i = 0; i < _message.Length; i += 2)
+                    {
+                        if (i + 1 < _message.Length)
+                        {
+                            joinedMessage.Add(_message[i] + _message[i + 1]);
+                        }
+                        else
+                        {
+                            joinedMessage.Add(_message[i]);
+                        }
+                    }
 
-                    // Send a response back to the client
+                    _message = [.. joinedMessage];
+
                     string response = "Message received correctly";
                     byte[] responseBytes = Encoding.UTF8.GetBytes(response);
                     stream.Write(responseBytes, 0, responseBytes.Length);
