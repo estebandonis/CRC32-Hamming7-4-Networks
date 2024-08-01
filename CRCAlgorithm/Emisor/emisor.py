@@ -35,21 +35,30 @@ class Noise:
     def __init__(self, message):
         self.message = message
 
-        # if self.getNoiseChance():
-        #     self.message = self.addNoise()
-        
+        self.main()
+
+    def main(self):
+        self.AddNoise()
         Transmision(self.message)
 
-    def addNoise(self):
-        messageList = list(self.message)
-        randomIndex = random.randint(0, len(messageList) - 1)
-        messageList[randomIndex] = '1' if messageList[randomIndex] == '0' else '0'
+    def AddNoise(self):
+        print("Enter the probability of noise (0-1): ")
+        firstNum = int(input("Enter dividend: "))
+        secondNum = int(input("Enter divisor: "))
+        probability = firstNum/secondNum
 
-        return ''.join(messageList)
+        messageList = self.message
+
+        for indexBlock, block in enumerate(messageList):
+            for indexBit, bit in enumerate(block):
+                if self.getNoiseChance(probability):
+                    listBlock = list(self.message[indexBlock])
+                    listBlock[indexBit] = '1' if bit == '0' else '0' 
+                    self.message[indexBlock] = ''.join(listBlock)
 
     @staticmethod
-    def getNoiseChance():
-        return random.random() <= 0.1
+    def getNoiseChance(probability):
+        return random.random() <= probability
 
 
 class Link:
