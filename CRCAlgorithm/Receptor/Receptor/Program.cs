@@ -2,11 +2,21 @@
 using System.Net.Sockets;
 using System.Text;
 
+// AI used to understand how to implement certain functionalities in C#.
+
+
 namespace Receptor
 {
 
+    /// <summary>
+    /// Class in charge of the application.
+    /// </summary>
     class Aplication
     {
+        /// <summary>
+        /// Method in charge of printing the decoded message.
+        /// </summary>
+        /// <param name="message">The message to print</param>
         public static void PrintDecodedMessage(string message)
         {
             Console.WriteLine($"Message decoded: {message}");
@@ -14,14 +24,22 @@ namespace Receptor
     }
 
 
+/// <summary>
+/// Class in charge of presenting the message.
+/// </summary>
     class Presentation()
     {
 
+        /// <summary>
+        /// Method in charge of decoding the message.
+        /// </summary>
+        /// <param name="message">The message to decode</param>
         public static void DecodeMessage(string message)
         {
             string decodedMessage = "";
             for (int i = 0; i < message.Length; i += 8)
             {
+                // AI helped with the decoding of the message.
                 string byteString = message[i..(i + 8)];
                 byte byteValue = Convert.ToByte(byteString, 2);
                 decodedMessage += (char)byteValue;
@@ -32,16 +50,25 @@ namespace Receptor
     }
 
 
+/// <summary>
+/// Class in charge of verifying the message.
+/// </summary>
     class Link
     {
         private string[] _message = [];
 
+        /// <summary>
+        /// Property in charge of getting and setting the message.
+        /// </summary>
         public string[] Message
         {
             get => _message;
             set => _message = value;
         }
 
+        /// <summary>
+        /// Method in charge of performing the XOR operation.
+        /// </summary>
         static char XOR(char a, char b)
         {
             if (a == b)
@@ -54,6 +81,11 @@ namespace Receptor
             }
         }
 
+        /// <summary>
+        /// Method in charge of verifying the XOR operation.
+        /// </summary>
+        /// <param name="polinomioBits">The polinomio bits</param>
+        /// <param name="OldMessage">The old message</param>
         static string VerifyXOROperation(string polinomioBits, string OldMessage)
         {
             string NewMessage = "";
@@ -81,6 +113,9 @@ namespace Receptor
             return OldMessage;
         }
 
+        /// <summary>
+        /// Method in charge of verifying the message.
+        /// </summary>
         static string VerifyMessage(string polinomioBits, string OldMessage, int gradoPolinomio)
         {
             bool endFlag = false;
@@ -120,6 +155,9 @@ namespace Receptor
             return OldMessage[^gradoPolinomio..];
         }
 
+        /// <summary>
+        /// Method in charge of executing the link.
+        /// </summary>
         public void Execute()
         {
             string polinomioBits = "100000100110000010001110110110111";
@@ -154,7 +192,9 @@ namespace Receptor
         }
     }
 
-
+/// <summary>
+/// Class in charge of receiving the message.
+/// </summary>
     class Transmision
     {
         const string HOST = "127.0.0.1";
@@ -162,6 +202,9 @@ namespace Receptor
 
         private string[]? _message;
 
+        /// <summary>
+        /// Method in charge of executing the transmision.
+        /// </summary>
         public void Execute()
         {
             // Create a TCP listener
@@ -183,6 +226,10 @@ namespace Receptor
             }
         }
 
+        /// <summary>
+        /// Method in charge of handling the client.
+        /// </summary>
+        /// <param name="client">The client to handle</param>
         private void HandleClient(TcpClient client)
         {
             NetworkStream stream = client.GetStream();
@@ -231,8 +278,14 @@ namespace Receptor
     }
 
 
+    /// <summary>
+    /// Class in charge of starting the program.
+    /// </summary>
     class Program
     {
+        /// <summary>
+        /// Main method of the program.
+        /// </summary>
         static void Main(string[] args)
         {
             Transmision transmision = new();
